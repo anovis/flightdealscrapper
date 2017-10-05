@@ -15,24 +15,24 @@ llist = []
 flist2 = []
 llist2 = []
 
-def lambda_handler(event, context):
+def send_email(city):
     
     data_message = ""
     
     #secret flying
-    parser = MyHTMLParser()
+    parser = SecretFlyingParser()
     res = urlopen('http://www.secretflying.com/usa-deals/')
     html = str(res.read(), res.headers.get_content_charset('utf8'))
     parser.feed(html)
-    res2 = urlopen('http://www.secretflying.com/usa-deals/page/2')
-    html2 = str(res2.read(), res.headers.get_content_charset('utf8')) 
-    parser.feed(html2)
-    res3 = urlopen('http://www.secretflying.com/usa-deals/page/3')
-    html3 = str(res3.read(), res.headers.get_content_charset('utf8')) 
-    parser.feed(html3)
+    
+    parser2 = SecretFlyingParser()
+    res = urlopen('http://www.secretflying.com/usa-deals/')
+    html = str(res.read(), res.headers.get_content_charset('utf8'))
+    parser2.feed(html)
+    
     flightW = filter(lambda x: "Boston" in x, flist)
     #the flight deal
-    parser2 = MyHTMLParserFlightDeal()
+    parser3 = FlightDealParser()
     
     site = 'http://www.theflightdeal.com/'
     hdr = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
@@ -44,8 +44,8 @@ def lambda_handler(event, context):
     
     req= Request(site,headers=hdr)
     res = urlopen(req)
-    html = str(res.read(), res.headers.getparam('charset'))
-    parser2.feed(html)
+    html = str(res.read(), res.headers.get_content_charset('utf8'))
+    parser3.feed(html)
 
     for f in flightW:
         data_message = data_message + '<h3>' + f + '</h3>'    
@@ -63,37 +63,16 @@ def lambda_handler(event, context):
 
     msg = MIMEMultipart() #create the message
     msg['From'] = 'manwei.test@gmail.com'
-    msg['To'] = 'manwei.chan@gmail.com'
+    msg['To'] = 'austen.novis@gmail.com'
     msg['Subject'] = "This is a TEST"
-    msg.attach(MIMEText(data_message,'plain'))
+    msg.attach(MIMEText(data_message,'html'))
     s.send_message(msg)
-    
-    # response = client.send_email(
-    # Source='dailyflightdeals@gmail.com',
-    # Destination={
-    #     'ToAddresses': [
-    #         'manwei.chan@gmail.com ',
-    #     ]
-    # },
-    # Message={
-    #     'Subject': {
-    #         'Data': 'Todays Flight Deals'
-    #     },
-    #     'Body': {
-    #         'Text': {
-    #             'Data': data_message
-    #         },
-    #         'Html': {
-    #             'Data': data_message
-    #         }
-    #     }
-    # }
-    # )
-    
+    print("sent email?")
+
     return 'Worked'
     
     
-class MyHTMLParser(HTMLParser):
+class SecretFlyingParser(HTMLParser):
     def handle_starttag(self, tag, attrs):
         if tag == 'a':
             for name, value in attrs:
@@ -110,7 +89,7 @@ class MyHTMLParser(HTMLParser):
             addflight(data)
             
             
-class MyHTMLParserFlightDeal(HTMLParser):
+class FlightDealParser(HTMLParser):
     def handle_starttag(self, tag, attrs):
         if tag == 'a':
             for name, value in attrs:
@@ -123,7 +102,6 @@ class MyHTMLParserFlightDeal(HTMLParser):
 
 
 
-            
 def addflight(flight):
     if ('/') not in flight:
         if ('signup') not in flight:
@@ -137,4 +115,4 @@ def addflight(flight):
                                 plist.append(price)
     return
 
-lambda_handler('first run','at home')
+send_email('xxxx')
