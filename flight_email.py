@@ -1,7 +1,7 @@
-import parsers
+import emailscrappers
 
 to = "austen.novis@gmail.com"
-x = parsers.TheFlightDeal("Boston")
-y = parsers.SecretFlying("Boston")
-e = parsers.EmailScraper("Boston",to,[x,y])
+x = emailscrappers.TheFlightDeal("Boston")
+y = emailscrappers.SecretFlying("Boston")
+e = emailscrappers.EmailScraper("Boston", to, [x, y])
 e.send_email()
