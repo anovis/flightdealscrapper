@@ -1,6 +1,6 @@
 import sys
 sys.path.append("..")
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 import emailscrappers
 
@@ -14,6 +14,13 @@ def get_deals(city):
     e = emailscrappers.EmailScraper(city, "", [x, y])
     deals = e.call_scrappers()
     return jsonify({'deals': deals})
+
+@app.route('/citydeals/newuser', methods=['POST'])
+def new_user():
+    req_json = request.get_json()
+    print(req_json['firstName'])
+    return "success"
+
 
 if __name__ == '__main__':
     app.run(debug=True)
