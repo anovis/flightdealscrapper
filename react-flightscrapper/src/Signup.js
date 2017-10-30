@@ -7,27 +7,34 @@ export default class Signup extends React.Component {
   constructor() {
     super();
 
-    this.handleTimeChange = this.handleTimeChange.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
 
-    this.state = { time: 0 };
+    this.state = { time: 0,city:"",email:"" };
   }
 
-  handleTimeChange(time) {
-    console.log(time);     // <- prints "3600" if "01:00" is picked
-    this.setState({ time });
+  handleChange(e) {   // <- prints "3600" if "01:00" is picked
+    if (e.target){
+        var update={}
+        update[e.target.name] = e.target.value;
+        console.log(this.state)
+        this.setState(update);
+      }
   }
 
    handleSubmit(event) {
+    event.preventDefault();
     var headers = {
                'Access-Control-Allow-Methods': 'POST',
                'Access-Control-Allow-Headers': 'Content-Type, Authorization',
                'Access-Control-Allow-Origin':  'http://127.0.0.1:5000'
            }
-    axios.post('http://127.0.0.1:5000/citydeals/newuser', { firstName: event}, headers)
+
+    axios.post('http://127.0.0.1:5000/citydeals/newuser', this.state, headers)
           .then((response) => {
             console.log(response)})
           .catch((error) => {console.log(error)})
-    event.preventDefault();
+
 
     }
 
@@ -39,7 +46,7 @@ export default class Signup extends React.Component {
             Email
           </Col>
           <Col sm={10}>
-            <FormControl type="email" placeholder="Email" />
+            <FormControl onChange={this.handleChange} value={this.state.email} name="email" type="email" placeholder="Email" />
           </Col>
         </FormGroup>
          <FormGroup controlId="formHorizontalEmail">
@@ -47,7 +54,7 @@ export default class Signup extends React.Component {
                     City
                   </Col>
                   <Col sm={10}>
-                    <FormControl type="city" placeholder="Citys" />
+                    <FormControl onChange={this.handleChange} value={this.state.city} name="city" type="city" placeholder="City" />
                   </Col>
          </FormGroup>
 
@@ -55,7 +62,7 @@ export default class Signup extends React.Component {
           <Col componentClass={ControlLabel} sm={2}>
             Time
           </Col>
-             <TimePicker onChange={this.handleTimeChange} value={this.state.time} />
+             <TimePicker onChange={this.handleChange} value={this.state.time} name="time "/>
         </FormGroup>
 
         <FormGroup>

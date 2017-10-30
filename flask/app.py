@@ -18,7 +18,8 @@ def get_deals(city):
 @app.route('/citydeals/newuser', methods=['POST'])
 def new_user():
     req_json = request.get_json()
-    print(req_json['firstName'])
+    print(req_json)
+
     return "success"
 
 
