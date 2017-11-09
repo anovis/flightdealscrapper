@@ -15,6 +15,10 @@ def get_deals(city):
     deals = e.call_scrappers()
     return jsonify({'deals': deals})
 
+@app.route('/subscriptions/<string:email>', methods=['GET'])
+def get_subscriptions(email):
+    return jsonify({'subscriptions': ["Boston", "New York"]})
+
 @app.route('/citydeals/newuser', methods=['POST'])
 def new_user():
     req_json = request.get_json()
