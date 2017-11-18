@@ -9,6 +9,7 @@ export default class Signup extends React.Component {
 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleTime = this.handleTime.bind(this);
 
     this.state = { time: 0,city:"",email:"" };
   }
@@ -21,9 +22,14 @@ export default class Signup extends React.Component {
         this.setState(update);
       }
   }
+  handleTime(newtime){
+  this.setState({time:newtime});
+  }
+
+
 
    handleSubmit(event) {
-    event.preventDefault();
+    //event.preventDefault();
     var headers = {
                'Access-Control-Allow-Methods': 'POST',
                'Access-Control-Allow-Headers': 'Content-Type, Authorization',
@@ -40,44 +46,17 @@ export default class Signup extends React.Component {
 
   render() {
     return (
-      <Form horizontal onSubmit={this.handleSubmit}>
-        <FormGroup controlId="formHorizontalEmail">
-          <Col componentClass={ControlLabel} sm={2}>
-            Email
-          </Col>
-          <Col sm={10}>
-            <FormControl onChange={this.handleChange} value={this.state.email} name="email" type="email" placeholder="Email" />
-          </Col>
-        </FormGroup>
-         <FormGroup controlId="formHorizontalEmail">
-                  <Col componentClass={ControlLabel} sm={2}>
-                    City
-                  </Col>
-                  <Col sm={10}>
-                    <FormControl onChange={this.handleChange} value={this.state.city} name="city" type="city" placeholder="City" />
-                  </Col>
-         </FormGroup>
+      <Form onSubmit={this.handleSubmit}>
+            <label> Email </label>
+            <input className="form-styling" onChange={this.handleChange} value={this.state.email} name="email" type="email" placeholder="Email" />
 
-        <FormGroup controlId="formHorizontalPassword">
-          <Col componentClass={ControlLabel} sm={2}>
-            Time
-          </Col>
-             <TimePicker onChange={this.handleChange} value={this.state.time} name="time "/>
-        </FormGroup>
+            <label> City </label>
+            <input className="form-styling" onChange={this.handleChange} value={this.state.city} name="city" type="city" placeholder="City" />
 
-        <FormGroup>
-          <Col smOffset={2} sm={10}>
-            <Checkbox>Remember me</Checkbox>
-          </Col>
-        </FormGroup>
+           <label> Time </label>
+           <div className="fix-time"> </div> <TimePicker className="form-styling" onChange={this.handleTime} value={this.state.time} type="time" name="time "/>
 
-        <FormGroup>
-          <Col smOffset={2} sm={10}>
-            <Button type="submit">
-              Sign Up
-            </Button>
-          </Col>
-        </FormGroup>
+           <input type="submit" value="Submit" className="btn btn-default" />
       </Form>
       );
   }

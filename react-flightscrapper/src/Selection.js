@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Button } from 'react-bootstrap';
 var axios = require('axios');
 
 export default class Selection extends React.Component {
@@ -25,18 +26,14 @@ export default class Selection extends React.Component {
   render() {
     return (
     <div>
-    <div className="col-md-4" />
       <form onSubmit={this.handleSubmit}>
-        <div className="form-group col-md-4">
+        <div>
           <label>See Latest Flight Deals from any City</label>
-          <input type="city" className="form-control" id="city" value={this.state.city} onChange={this.handleChange} placeholder="City Name" />
-         <input type="submit" value="Submit" className="btn btn-default" />
+          <input type="city" className="form-styling" id="city" value={this.state.city} onChange={this.handleChange} placeholder="City Name" />
         </div>
-            <div className="col-md-4" />
+         <input type="submit" value="Submit" className="btn btn-default" />
       </form>
-      <div className="col-md-4" />
-       <div className="col-md-8" dangerouslySetInnerHTML={{__html: this.state.deals}} />
-        <div className="col-md-2" />
+       <div  dangerouslySetInnerHTML={{__html: this.state.deals}} />
        </div>
     );
   }

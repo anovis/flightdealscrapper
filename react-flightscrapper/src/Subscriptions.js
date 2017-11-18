@@ -1,4 +1,4 @@
-import { ListGroup,ListGroupItem } from 'react-bootstrap';
+import { ListGroup,ListGroupItem, Button } from 'react-bootstrap';
 import React, { Component } from 'react';
 var axios = require('axios');
 
@@ -28,7 +28,7 @@ export default class Subscriptions extends React.Component {
   render() {
     var subscription_list = [];
     for (var i=0; i < this.state.subscriptions.length; i++){
-        subscription_list.push(<ListGroupItem> {this.state.subscriptions[i]} </ListGroupItem>)
+        subscription_list.push(<li className="li-sub"><a className="li-sub-a"> {this.state.subscriptions[i]} </a></li>)
     }
 
     return (
@@ -36,14 +36,15 @@ export default class Subscriptions extends React.Component {
           <form onSubmit={this.handleSubmit}>
             <div className="form-group">
               <label>Enter Email address you used to sign up</label>
-              <input type="email" className="form-control" id="email" value={this.state.email} onChange={this.handleChange} placeholder="Email" />
-             <input type="submit" value="Submit" className="btn btn-default" />
+              <input className="form-styling" type="email" id="email" value={this.state.email} onChange={this.handleChange} placeholder="Email" />
+
             </div>
-                <div/>
+             <input className="btn btn-default" type="submit" value="Submit" />
+
           </form>
-          <div><ListGroup>
-      {subscription_list}
-      </ListGroup></div>
+          <ul className="ul-sub">
+        {subscription_list}
+       </ul>
        </div>
     );
   }

@@ -43,32 +43,23 @@ class App extends Component {
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Welcome to Daily Flight Deals</h1>
         </header>
-        <div className="Selection-div">
-            {this.state.flights && <Selection />}
-        </div>
-       <div className="form-group col-md-4">
-       </div>
-           <ButtonGroup vertical>
-               <Button bsStyle="primary" type="button" onClick={this.toggleFlights}>
-                Today's Deals
-               </Button>
-               <Button bsStyle="primary" type="button" onClick={this.toggleSignup}>
-                 Sign Up
-               </Button>
-              <Button bsStyle="primary" type="button" onClick={this.toggleSubscription}>
-                View Subscriptions
-              </Button>
-           </ButtonGroup>
-        <div className="form-group col-md-4">
-            <div className="Form-div">
-            {this.state.signup && <Signup />}
-            {this.state.subscription && <Subscriptions />}
-            </div>
-        </div>
+        <div className="container">
+          <div className="frame">
+            <div className="nav">
+              <ul className= "links">
+                <li className="nav-li"><Button bsStyle="primary" type="button" onClick={this.toggleFlights}> Today's Deals </Button></li>
+                <li className="nav-li"><Button bsStyle="primary" type="button" onClick={this.toggleSignup}> Sign Up </Button></li>
+                <li className="nav-li"><Button bsStyle="primary" type="button" onClick={this.toggleSubscription}> View Subscriptions </Button></li>
+              </ul>
+             </div>
 
-        <div className="form-group col-md-4">
+                <div className="Form-div">
+                    {this.state.flights && <Selection />}
+                    {this.state.signup && <Signup />}
+                    {this.state.subscription && <Subscriptions />}
+                </div>
+          </div>
         </div>
-
       </div>
     );
   }
