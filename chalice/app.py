@@ -4,10 +4,10 @@ import re
 from urllib.request import urlopen
 from urllib.request import Request
 import boto3
-import json
+from boto3.dynamodb.conditions import Key, Attr
 
 DYNAMO = boto3.client('dynamodb')
-DYNAMO_ARN = "dailyflightdeal"
+DYNAMO_TABLE = "dailyflightdeals"
 
 
 app = Chalice(app_name="dailyflightdeal")
@@ -24,8 +24,17 @@ def get_deals(city):
 @app.route('/citydeals/newuser', methods=['POST'],cors=True)
 def new_user():
     states= app.current_request.json_body
-    response = DYNAMO.put_item(TableName=DYNAMO_ARN,Item={'email':{'S': states['email']},'city':{'S': states['city']},'time':{'N': str(states['time'])}})
+    response = DYNAMO.put_item(TableName=DYNAMO_TABLE,Item={'email':{'S': states['email']},'city':{'S': states['city']},'time':{'N': str(states['time'])}})
     return response
+
+@app.route('/subscriptions/{email}',cors=True)
+def get_subscriptions(email):
+    response = DYNAMO.query(TableName=DYNAMO_TABLE,ExpressionAttributeValues={':email': {'S': email,},},KeyConditionExpression='email=:email',ProjectionExpression='city')
+    items = response['Items']
+    cities = []
+    for city in items:
+        cities.append(city['city']['S'])
+    return cities
 
 
 class EmailScraper:

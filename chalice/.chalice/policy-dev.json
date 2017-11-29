@@ -4,12 +4,13 @@
     {
       "Effect": "Allow",
       "Action": [
-        "dynamodb:PutItem"
+        "dynamodb:PutItem",
+        "dynamodb:Query"
       ],
       "Resource": [
         "*"
       ],
-      "Sid": "0bfd5640078245f8b8a194c0641948f7"
+      "Sid": "0816bd6acc17454ea021df26aa048b0a"
     },
     {
       "Effect": "Allow",

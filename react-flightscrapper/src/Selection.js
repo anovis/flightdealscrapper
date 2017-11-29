@@ -5,7 +5,7 @@ var axios = require('axios');
 export default class Selection extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {city: '',deals:"<div> </div>"};
+    this.state = {city: '',deals:[], hrefs:[]};
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
@@ -15,15 +15,20 @@ export default class Selection extends React.Component {
   }
 
   handleSubmit(event) {
-    axios.get('http://127.0.0.1:5000/citydeals/' + this.state.city)
+    axios.get('https://woysf8pmu6.execute-api.us-east-1.amazonaws.com/api/citydeals/' + this.state.city)
         .then((response) => {
-          this.setState({deals: response.data.deals})
+          this.setState({deals: response.data.deals, hrefs:response.data.hrefs})
         })
         .catch((error) => {console.log(error)})
     event.preventDefault();
   }
 
   render() {
+    var selection_list = [];
+      for (var i=0; i < this.state.deals.length; i++){
+          selection_list.push(<li className="li-sub"><a className="li-sub-a" href={this.state.hrefs[i]}> {this.state.deals[i]} </a></li>)
+      }
+
     return (
     <div>
       <form onSubmit={this.handleSubmit}>
@@ -33,8 +38,10 @@ export default class Selection extends React.Component {
         </div>
          <input type="submit" value="Submit" className="btn btn-default" />
       </form>
-       <div  dangerouslySetInnerHTML={{__html: this.state.deals}} />
-       </div>
+       <ul className="ul-sub">
+        {selection_list}
+       </ul>
+              </div>
     );
   }
 }

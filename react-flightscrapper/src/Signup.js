@@ -18,7 +18,6 @@ export default class Signup extends React.Component {
     if (e.target){
         var update={}
         update[e.target.name] = e.target.value;
-        console.log(this.state)
         this.setState(update);
       }
   }
@@ -33,14 +32,14 @@ export default class Signup extends React.Component {
     var headers = {
                'Access-Control-Allow-Methods': 'POST',
                'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-               'Access-Control-Allow-Origin':  'http://127.0.0.1:5000'
+               'Access-Control-Allow-Origin':  'http://flightdealbuilds.s3-website-us-east-1.amazonaws.com/build-1120/build',
+               'Content-Type':'application/json'
            }
 
-    axios.post('http://127.0.0.1:5000/citydeals/newuser', this.state, headers)
+    axios.post('https://woysf8pmu6.execute-api.us-east-1.amazonaws.com/api/citydeals/newuser', this.state, headers)
           .then((response) => {
             console.log(response)})
           .catch((error) => {console.log(error)})
-
 
     }
 
@@ -54,7 +53,7 @@ export default class Signup extends React.Component {
             <input className="form-styling" onChange={this.handleChange} value={this.state.city} name="city" type="city" placeholder="City" />
 
            <label> Time </label>
-           <div className="fix-time"> </div> <TimePicker className="form-styling" onChange={this.handleTime} value={this.state.time} type="time" name="time "/>
+           <center><TimePicker className="form-styling" step={60} onChange={this.handleTime} value={this.state.time} type="time" name="time "/></center>
 
            <input type="submit" value="Submit" className="btn btn-default" />
       </Form>

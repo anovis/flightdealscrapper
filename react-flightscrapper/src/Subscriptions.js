@@ -17,9 +17,9 @@ export default class Subscriptions extends React.Component {
   }
 
   handleSubmit(event) {
-    axios.get('http://127.0.0.1:5000/subscriptions/' + this.state.email)
+    axios.get('https://woysf8pmu6.execute-api.us-east-1.amazonaws.com/api/subscriptions/' + this.state.email)
         .then((response) => {
-          this.setState({subscriptions: response.data.subscriptions})
+          this.setState({subscriptions: response.data})
         })
         .catch((error) => {console.log(error)})
     event.preventDefault();

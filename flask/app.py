@@ -2,6 +2,7 @@ import sys
 sys.path.append("..")
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+from flask import render_template
 import emailscrappers
 
 app = Flask(__name__)
@@ -25,6 +26,7 @@ def new_user():
     print(req_json)
 
     return "success"
+
 
 
 if __name__ == '__main__':
