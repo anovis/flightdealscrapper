@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { Button } from 'react-bootstrap';
+var Spinner = require('react-spinkit');
 var axios = require('axios');
 
 export default class Selection extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {city: '',deals:[], hrefs:[]};
+    this.state = {city: '',deals:[], hrefs:[], loading: false};
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
@@ -15,9 +16,10 @@ export default class Selection extends React.Component {
   }
 
   handleSubmit(event) {
+    this.setState({loading: true})
     axios.get('https://woysf8pmu6.execute-api.us-east-1.amazonaws.com/api/citydeals/' + this.state.city)
         .then((response) => {
-          this.setState({deals: response.data.deals, hrefs:response.data.hrefs})
+          this.setState({deals: response.data.deals, hrefs:response.data.hrefs,loading: false})
         })
         .catch((error) => {console.log(error)})
     event.preventDefault();
@@ -41,6 +43,7 @@ export default class Selection extends React.Component {
        <ul className="ul-sub">
         {selection_list}
        </ul>
+       {this.state.loading && <Spinner name='three-bounce' color='blue'/>}
               </div>
     );
   }

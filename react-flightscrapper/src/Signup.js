@@ -52,7 +52,7 @@ export default class Signup extends React.Component {
             <label> City </label>
             <input className="form-styling" onChange={this.handleChange} value={this.state.city} name="city" type="city" placeholder="City" />
 
-           <label> Time </label>
+           <label> Time for Daily Email </label>
            <center><TimePicker className="form-styling" step={60} onChange={this.handleTime} value={this.state.time} type="time" name="time "/></center>
 
            <input type="submit" value="Submit" className="btn btn-default" />
