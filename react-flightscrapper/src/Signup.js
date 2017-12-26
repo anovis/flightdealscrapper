@@ -49,10 +49,10 @@ export default class Signup extends React.Component {
             <label> Email </label>
             <input className="form-styling" onChange={this.handleChange} value={this.state.email} name="email" type="email" placeholder="Email" />
 
-            <label> City </label>
+            <label> City that you want deals from (Major cities work best) </label>
             <input className="form-styling" onChange={this.handleChange} value={this.state.city} name="city" type="city" placeholder="City" />
 
-           <label> Time for Daily Email </label>
+           <label> Time when you would like to be emailed everyday if there are deals </label>
            <center><TimePicker className="form-styling" step={60} onChange={this.handleTime} value={this.state.time} type="time" name="time "/></center>
 
            <input type="submit" value="Submit" className="btn btn-default" />

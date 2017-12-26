@@ -13,7 +13,9 @@
 import into App.js
 * To run the frontend go into react-flightscrapper folder and run `npm start`
 
+* The react build file is uploaded to S3 and hosted there
+
 ### Backend
 
-* The backend is written in Python using Flask
-* You can run it by going into Flask folder and running `python app.py`
+* The backend is written in Python using Chalice
+* Chalice uploads all functions to AWS API gateway and creates corresponding lambdas's
