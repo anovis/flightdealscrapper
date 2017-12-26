@@ -1,10 +1,40 @@
+from chalice import Chalice
 from bs4 import BeautifulSoup
 import re
 from urllib.request import urlopen
 from urllib.request import Request
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-import smtplib
+import boto3
+from boto3.dynamodb.conditions import Key, Attr
+
+DYNAMO = boto3.client('dynamodb')
+DYNAMO_TABLE = "dailyflightdeals"
+
+
+app = Chalice(app_name="dailyflightdeal")
+app.debug = True
+
+@app.route('/citydeals/{city}',cors=True)
+def get_deals(city):
+    x = TheFlightDeal(city)
+    y = SecretFlying(city)
+    e = EmailScraper(city, "", [x, y])
+    deals,hrefs = e.call_scrappers()
+    return {'deals': deals,'hrefs':hrefs}
+
+@app.route('/citydeals/newuser', methods=['POST'],cors=True)
+def new_user():
+    states= app.current_request.json_body
+    response = DYNAMO.put_item(TableName=DYNAMO_TABLE,Item={'email':{'S': states['email']},'city':{'S': states['city']},'time':{'N': str(states['time'])}})
+    return response
+
+@app.route('/subscriptions/{email}',cors=True)
+def get_subscriptions(email):
+    response = DYNAMO.query(TableName=DYNAMO_TABLE,ExpressionAttributeValues={':email': {'S': email,},},KeyConditionExpression='email=:email',ProjectionExpression='city')
+    items = response['Items']
+    cities = []
+    for city in items:
+        cities.append(city['city']['S'])
+    return cities
 
 
 class EmailScraper:
@@ -12,32 +42,16 @@ class EmailScraper:
         self.city = city
         self.scrappers = scrappers
         self.subscribers = subscribers
-        self.email_client = self.create_email_client
-        self.msg = self.create_message()
-
-    @property
-    def create_email_client(self):
-        s = smtplib.SMTP(host="smtp.gmail.com", port = "587")
-        s.starttls()
-        s.login('dailyflightdeals@gmail.com','testing123')
-        return s
-
-    def create_message(self):
-        msg = MIMEMultipart()
-        msg['From'] = 'manwei.test@gmail.com'
-        msg['To'] = self.subscribers
-        msg['Subject'] = "Daily Flights from " + self.city
-        msg.attach(MIMEText(self.call_scrappers(),'html'))
-        return msg
 
     def call_scrappers(self):
-        mess_body = "<h2> Today's Flight Deals from " + self.city + "</h2>"
+        deal_name_total = []
+        deal_href_total = []
         for scrapper in self.scrappers:
-            mess_body += scrapper.parse_soup()
-        return mess_body
+            deal_name, deal_href = scrapper.parse_soup()
+            deal_name_total.extend(deal_name)
+            deal_href_total.extend(deal_href)
+        return deal_name_total,deal_href_total
 
-    def send_email(self):
-        self.email_client.send_message(self.msg)
 
 
 class BaseScrapper:
@@ -67,11 +81,13 @@ class SecretFlying(BaseScrapper):
         return urlopen(self.website)
 
     def parse_soup(self):
-        deal_html = ""
+        deal_name = []
+        deal_href = []
         deal_list = self.soup.find_all(title=re.compile('.*' + self.city),text=True,class_=None)
         for deal in deal_list:
-            deal_html = deal_html + "<br><h3><a href=\"" + deal["href"] + "\" >" + deal["title"] + "</a></h3>"
-        return deal_html
+            deal_name.append(deal["title"])
+            deal_href.append(deal["href"])
+        return deal_name, deal_href
 
 class TheFlightDeal(BaseScrapper):
     def __init__ (self, city):
@@ -89,9 +105,15 @@ class TheFlightDeal(BaseScrapper):
         return urlopen(req)
 
     def parse_soup(self):
-        deal_html = ""
+        deal_name = []
+        deal_href = []
         deal_list = self.soup.find_all(title=re.compile('.*' + self.city),text=True,class_=None)
         for deal in deal_list:
-            deal_html = deal_html + "<br><h3><a href=\"" + deal["href"] + "\" >" + deal["title"] + "</a></h3>"
-        return deal_html
+            deal_name.append(deal["title"])
+            deal_href.append(deal["href"])
+        return deal_name, deal_href
+
+
+
+
 
