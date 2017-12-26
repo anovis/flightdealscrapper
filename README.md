@@ -1,23 +1,19 @@
 # flightdealscrapper
 
+### Flight Email Scrapper
 
-* This is for lambda so only using basic libraries
-* Currently just create new function for each city
-* have to keep 5 min time limit in mind if it takes too long to scrape
+* base flight classes are in emailscrappers
+* each parser is its own class (see Secretflying and TheFLightDeal as examples)
+* flight_email.py has working example on how to scrape and send emails using the new classes
 
-### Test function 
+### Frontend
 
-`
-{
-  "account": "123456789012",
-  "region": "us-east-1",
-  "detail": {},
-  "detail-type": "Scheduled Event",
-  "source": "aws.events",
-  "time": "1970-01-01T00:00:00Z",
-  "id": "cdc73f9d-aea9-11e3-9d5a-835b769c0d9c",
-  "resources": [
-    "arn:aws:events:us-east-1:123456789012:rule/my-schedule"
-  ]
-}
-`
+* The frontend is written in React
+* The index.js calls App.js which will contain all the necessary components. Create each new component separately and
+import into App.js
+* To run the frontend go into react-flightscrapper folder and run `npm start`
+
+### Backend
+
+* The backend is written in Python using Flask
+* You can run it by going into Flask folder and running `python app.py`
