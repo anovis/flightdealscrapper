@@ -1,12 +1,20 @@
 import React, { Component } from 'react';
-import { Button } from 'react-bootstrap';
+import { Button, Alert } from 'react-bootstrap';
 var Spinner = require('react-spinkit');
 var axios = require('axios');
+
+
+const alert = <Alert bsStyle="warning" >
+                            <h4>No Deals Found!</h4>
+                            <p>Try again with a different city or at a later time</p>
+                          </Alert>
+
+
 
 export default class Selection extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {city: '',deals:[], hrefs:[], loading: false};
+    this.state = {city: '',deals:[], hrefs:[], loading: false, nodeals: false};
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
@@ -19,7 +27,13 @@ export default class Selection extends React.Component {
     this.setState({loading: true})
     axios.get('https://woysf8pmu6.execute-api.us-east-1.amazonaws.com/api/citydeals/' + this.state.city)
         .then((response) => {
-          this.setState({deals: response.data.deals, hrefs:response.data.hrefs,loading: false})
+          if (response.data.deals.length ==0){
+            this.setState({nodeals:true})
+            }
+          else{
+            this.setState({nodeals:false})
+            }
+          this.setState({deals: response.data.deals, hrefs:response.data.hrefs,loading: false, skipinit: true})
         })
         .catch((error) => {console.log(error)})
     event.preventDefault();
@@ -32,6 +46,7 @@ export default class Selection extends React.Component {
       }
 
     return (
+
     <div>
       <form onSubmit={this.handleSubmit}>
         <div>
@@ -43,7 +58,10 @@ export default class Selection extends React.Component {
        <ul className="ul-sub">
         {selection_list}
        </ul>
-       {this.state.loading && <Spinner name='three-bounce' color='blue'/>}
+       {this.state.loading && <Spinner name='three-bounce' color='blue'/> }
+       <div class="padding-top">
+       {this.state.nodeals && alert}
+            </div>
               </div>
     );
   }
