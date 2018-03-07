@@ -1,4 +1,4 @@
-import { ListGroup,ListGroupItem, Button } from 'react-bootstrap';
+import { ListGroup,ListGroupItem, Button,Alert } from 'react-bootstrap';
 import React, { Component } from 'react';
 var axios = require('axios');
 
@@ -7,7 +7,8 @@ export default class Subscriptions extends React.Component {
   constructor(props) {
     super(props);
     this.state = {email: '',
-                  subscriptions: []};
+                  subscriptions: [],
+                  noemails: false};
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
   }
@@ -19,6 +20,12 @@ export default class Subscriptions extends React.Component {
   handleSubmit(event) {
     axios.get('https://woysf8pmu6.execute-api.us-east-1.amazonaws.com/api/subscriptions/' + this.state.email)
         .then((response) => {
+         if (response.data.length ==0){
+            this.setState({noemails:true})
+            }
+          else{
+            this.setState({noemails:false})
+            }
           this.setState({subscriptions: response.data})
         })
         .catch((error) => {console.log(error)})
@@ -45,8 +52,13 @@ export default class Subscriptions extends React.Component {
           <ul className="ul-sub">
         {subscription_list}
        </ul>
+       {this.state.noemails && alert}
        </div>
     );
   }
 }
 
+const alert = <Alert bsStyle="warning" >
+                            <h4>No Subscriptions found for this email</h4>
+                            <p>Try with a different email or Signup</p>
+                          </Alert>
