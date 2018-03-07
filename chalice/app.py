@@ -15,7 +15,7 @@ app.debug = True
 
 @app.route('/citydeals/{city}',cors=True)
 def get_deals(city):
-    city = city.title()
+    city = city.replace("%20", " ").title()
     x = TheFlightDeal(city)
     y = SecretFlying(city)
     e = EmailScraper(city, "", [x, y])
