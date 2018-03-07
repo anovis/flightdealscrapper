@@ -10,7 +10,7 @@
       "Resource": [
         "*"
       ],
-      "Sid": "d534f678fc584e01842442e61850b3ee"
+      "Sid": "bffd5bd5c9fb4ea391d22a5574e5d628"
     },
     {
       "Effect": "Allow",

@@ -26,7 +26,7 @@ def get_deals(city):
 def new_user():
     states= app.current_request.json_body
     response = DYNAMO.put_item(TableName=DYNAMO_TABLE,Item={'email':{'S': states['email']},'city':{'S': states['city'].title()},'time':{'N': str(states['time'])}})
-    return {'len': len(response['Attributes'])}
+    return {'success': 'true'}
 
 
 @app.route('/subscriptions/{email}',cors=True)

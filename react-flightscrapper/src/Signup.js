@@ -34,16 +34,14 @@ export default class Signup extends React.Component {
     var headers = {
                'Access-Control-Allow-Methods': 'POST',
                'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-               'Access-Control-Allow-Origin':  'http://flightdealbuilds.s3-website-us-east-1.amazonaws.com/build-1120/build',
+               'Access-Control-Allow-Origin':  'http://www.dailyflightdeal.com/',
                'Content-Type':'application/json'
            }
 
     axios.post('https://woysf8pmu6.execute-api.us-east-1.amazonaws.com/api/citydeals/newuser', this.state, headers)
           .then((response) => {
-            if (response.data.len >= 1)
+            if (response.data.success == 'true')
              {this.setState({SuccessVisible: true})}
-
-
              })
           .catch((error) => {console.log(error)})
 
