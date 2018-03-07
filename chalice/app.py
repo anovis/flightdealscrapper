@@ -21,11 +21,13 @@ def get_deals(city):
     deals,hrefs = e.call_scrappers()
     return {'deals': deals,'hrefs':hrefs}
 
+
 @app.route('/citydeals/newuser', methods=['POST'],cors=True)
 def new_user():
     states= app.current_request.json_body
-    response = DYNAMO.put_item(TableName=DYNAMO_TABLE,Item={'email':{'S': states['email']},'city':{'S': states['city']},'time':{'N': str(states['time'])}})
-    return response
+    response = DYNAMO.put_item(TableName=DYNAMO_TABLE,Item={'email':{'S': states['email']},'city':{'S': states['city'].title()},'time':{'N': str(states['time'])}})
+    return {'success': 'true'}
+
 
 @app.route('/subscriptions/{email}',cors=True)
 def get_subscriptions(email):

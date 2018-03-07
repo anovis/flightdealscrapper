@@ -12,6 +12,7 @@ class EmailScraper:
         self.city = city
         self.scrappers = scrappers
         self.subscribers = subscribers
+        self.deal_list = []
         self.email_client = self.create_email_client
         self.msg = self.create_message()
 
@@ -24,20 +25,26 @@ class EmailScraper:
 
     def create_message(self):
         msg = MIMEMultipart()
-        msg['From'] = 'manwei.test@gmail.com'
-        msg['To'] = self.subscribers
+        msg['From'] = 'dailyflightdeals@gmail.com'
+        msg['BCC'] = self.subscribers
         msg['Subject'] = "Daily Flights from " + self.city
-        msg.attach(MIMEText(self.call_scrappers(),'html'))
+        msg.attach(MIMEText(self.list_to_html(), 'html'))
         return msg
 
-    def call_scrappers(self):
-        mess_body = "<h2> Today's Flight Deals from " + self.city + "</h2>"
+    def scrapper_deal_list(self):
         for scrapper in self.scrappers:
-            mess_body += scrapper.parse_soup()
+            self.deal_list = self.deal_list + scrapper.parse_soup()
+
+    def list_to_html(self):
+        mess_body = "<h2> Today's Flight Deals from " + self.city + "</h2>"
+        self.scrapper_deal_list()
+        for deal in self.deal_list:
+            mess_body = mess_body + "<br><h3><a href=\"" + deal["href"] + "\" >" + deal["title"] + "</a></h3>"
         return mess_body
 
     def send_email(self):
-        self.email_client.send_message(self.msg)
+        if self.deal_list:
+            self.email_client.send_message(self.msg)
 
 
 class BaseScrapper:
@@ -55,8 +62,9 @@ class BaseScrapper:
         return BeautifulSoup(html,'html.parser')
 
     def parse_soup(self):
-        #return html string
+        #return list of deals
         pass
+
 
 class SecretFlying(BaseScrapper):
     def __init__ (self, city):
@@ -67,11 +75,9 @@ class SecretFlying(BaseScrapper):
         return urlopen(self.website)
 
     def parse_soup(self):
-        deal_html = ""
-        deal_list = self.soup.find_all(title=re.compile('.*' + self.city),text=True,class_=None)
-        for deal in deal_list:
-            deal_html = deal_html + "<br><h3><a href=\"" + deal["href"] + "\" >" + deal["title"] + "</a></h3>"
-        return deal_html
+        deal_list = self.soup.find_all(title=re.compile('.*' + self.city), text=True, class_=None)
+        return deal_list
+
 
 class TheFlightDeal(BaseScrapper):
     def __init__ (self, city):
@@ -89,9 +95,6 @@ class TheFlightDeal(BaseScrapper):
         return urlopen(req)
 
     def parse_soup(self):
-        deal_html = ""
         deal_list = self.soup.find_all(title=re.compile('.*' + self.city),text=True,class_=None)
-        for deal in deal_list:
-            deal_html = deal_html + "<br><h3><a href=\"" + deal["href"] + "\" >" + deal["title"] + "</a></h3>"
-        return deal_html
+        return deal_list
 
