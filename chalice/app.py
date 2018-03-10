@@ -43,7 +43,7 @@ def get_subscriptions(email):
 @app.route('/subscriptions/{email}', methods=['PUT'], cors=True)
 def update_subscriptions(email):
     data = app.current_request.json_body
-    new_time = data['time']
+    new_time = int(data['time'])
     city = data['city']
     user = User.get(email, city)
     user.update(actions=[User.time.set(new_time)])
