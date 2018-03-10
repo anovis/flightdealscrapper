@@ -1,4 +1,4 @@
-import { ListGroup,ListGroupItem, Button,Alert } from 'react-bootstrap';
+import { ListGroup,ListGroupItem, Button,Alert,ButtonGroup,Glyphicon } from 'react-bootstrap';
 import React, { Component } from 'react';
 var axios = require('axios');
 
@@ -11,6 +11,8 @@ export default class Subscriptions extends React.Component {
                   noemails: false};
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
+//    this.handleUpdate = this.handleUpdate.bind(this);
+//    this.handleDelete = this.handleDelete.bind(this);
   }
 
   handleChange(event) {
@@ -32,10 +34,53 @@ export default class Subscriptions extends React.Component {
     event.preventDefault();
   }
 
+    handleDelete(e) {
+      var headers = {
+                   'Access-Control-Allow-Methods': 'POST',
+                   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+                   'Access-Control-Allow-Origin':  'http://www.dailyflightdeal.com/',
+                   'Content-Type':'application/json'
+               }
+      var num = e.currentTarget.id
+      var subscription_to_delete = {'city':this.state.subscriptions[num]['city']}
+      console.log(subscription_to_delete)
+      axios.post('https://woysf8pmu6.execute-api.us-east-1.amazonaws.com/api/subscriptions/' + this.state.email, subscription_to_delete, headers)
+          .then((response) => {
+          var cur_array = this.state.subscriptions
+          cur_array.splice(num,1)
+          console.log(cur_array)
+          this.setState({subscriptions:cur_array})
+          })
+          .catch((error) => {console.log(error)})
+    }
+
+   handleUpdate(subscription) {
+   var headers = {
+                      'Access-Control-Allow-Methods': 'PUT',
+                      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+                      'Access-Control-Allow-Origin':  'http://www.dailyflightdeal.com/',
+                      'Content-Type':'application/json'
+                  }
+//     axios.put('https://woysf8pmu6.execute-api.us-east-1.amazonaws.com/api/subscriptions/' + this.state.email,this.state, headers)
+//         .then((response) => {
+//          //time update
+//         })
+//         .catch((error) => {console.log(error)})
+   }
+
   render() {
     var subscription_list = [];
     for (var i=0; i < this.state.subscriptions.length; i++){
-        subscription_list.push(<li className="li-sub"><a className="li-sub-a"> {this.state.subscriptions[i]} </a></li>)
+        subscription_list.push(<li className="li-sub"><a className="li-sub-a"> {this.state.subscriptions[i]['city']} : {this.state.subscriptions[i]['time'] /3600 }
+         <ButtonGroup className="right-align">
+              <Button id={this.state.subscriptions[i]} onClick={this.handleUpdate.bind(this)}>
+                <Glyphicon glyph="edit" />
+              </Button>
+              <Button id={[i]} onClick={this.handleDelete.bind(this)}>
+                <Glyphicon glyph="trash" />
+              </Button>
+         </ButtonGroup>
+              </a></li>)
     }
 
     return (

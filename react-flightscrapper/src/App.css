@@ -144,6 +144,10 @@ html {
   background: #f6f6f6;
 }
 
+.right-align {
+    padding-left: 40%;
+}
+
 .ul-sub {
     list-style-type: none;
     padding-top: 30px;

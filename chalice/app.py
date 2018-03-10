@@ -36,13 +36,8 @@ def new_user():
 
 @app.route('/subscriptions/{email}',cors=True)
 def get_subscriptions(email):
-    response = DYNAMO.query(TableName=DYNAMO_TABLE,ExpressionAttributeValues={':email': {'S': email,},},KeyConditionExpression='email=:email',ProjectionExpression='city')
-    items = response['Items']
-    cities = []
-    for city in items:
-        cities.append(city['city']['S'])
-
-    return cities
+    subscriptions = [{'city':sub.city,'time':sub.time} for sub in User.query(email)]
+    return subscriptions
 
 
 @app.route('/subscriptions/{email}', methods=['PUT'], cors=True)
@@ -56,7 +51,7 @@ def update_subscriptions(email):
     return {"updated_subscription": "success"}
 
 
-@app.route('/subscriptions/{email}', methods=['DELETE'], cors=True)
+@app.route('/subscriptions/{email}', methods=['POST'], cors=True)
 def cancel_subscriptions(email):
     data = app.current_request.json_body
     city = data['city']
