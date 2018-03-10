@@ -6,6 +6,10 @@ from urllib.request import Request
 import boto3
 from boto3.dynamodb.conditions import Key, Attr
 
+from pynamodb.models import Model
+from pynamodb.attributes import UnicodeAttribute
+from pynamodb.attributes import NumberAttribute
+
 DYNAMO = boto3.client('dynamodb')
 DYNAMO_TABLE = "dailyflightdeals"
 
@@ -37,7 +41,30 @@ def get_subscriptions(email):
     cities = []
     for city in items:
         cities.append(city['city']['S'])
+
     return cities
+
+
+@app.route('/subscriptions/{email}', methods=['PUT'], cors=True)
+def update_subscriptions(email):
+    data = app.current_request.json_body
+    new_time = data['time']
+    city = data['city']
+    user = User.get(email, city)
+    user.time.set(new_time)
+    user.refresh()
+
+    return user
+
+
+@app.route('/subscriptions/{email}', methods=['DELETE'], cors=True)
+def cancel_subscriptions(email):
+    data = app.current_request.json_body
+    city = data['city']
+    user = User.get(email, city)
+    user.delete()
+
+    return {'success': 'subscription canceled'}
 
 
 class EmailScraper:
@@ -116,7 +143,15 @@ class TheFlightDeal(BaseScrapper):
             deal_href.append(deal["href"])
         return deal_name, deal_href
 
-
+class User(Model):
+    """
+    dailyflightdeals
+    """
+    class Meta:
+        table_name = "dailyflightdeals"
+    email = UnicodeAttribute(hash_key=True)
+    city = UnicodeAttribute(range_key=True)
+    time = NumberAttribute()
 
 
 
