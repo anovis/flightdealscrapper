@@ -51,10 +51,9 @@ def update_subscriptions(email):
     new_time = data['time']
     city = data['city']
     user = User.get(email, city)
-    user.time.set(new_time)
-    user.refresh()
+    user.update(actions=[User.time.set(new_time)])
 
-    return user
+    return {"updated_subscription": "success"}
 
 
 @app.route('/subscriptions/{email}', methods=['DELETE'], cors=True)

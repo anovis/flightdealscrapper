@@ -5,12 +5,18 @@
       "Effect": "Allow",
       "Action": [
         "dynamodb:PutItem",
-        "dynamodb:Query"
+        "dynamodb:Query",
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:Scan",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem"
       ],
       "Resource": [
         "*"
       ],
-      "Sid": "6d69bdc91b404fb4a710d2fc4212d945"
+      "Sid": "bbe713d2067042468755176181fc2266"
     },
     {
       "Effect": "Allow",
