@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "axios": "^0.17.1",
+    "material-ui": "^0.20.0",
     "react": "^16.0.0",
     "react-bootstrap": "^0.31.3",
     "react-bootstrap-time-picker": "^1.0.3",

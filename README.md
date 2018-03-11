@@ -19,3 +19,7 @@ import into App.js
 
 * The backend is written in Python using Chalice
 * Chalice uploads all functions to AWS API gateway and creates corresponding lambdas's
+
+* ```chalice deploy --no-autogen-policy``` (for pynamodb)
+* testing with aws api gateway add ```Accept:application/json
+                                   Content-Type:application/json```
