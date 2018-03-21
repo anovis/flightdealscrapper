@@ -3,12 +3,14 @@ from bs4 import BeautifulSoup
 import re
 from urllib.request import urlopen
 from urllib.request import Request
+import datetime
 import boto3
 from boto3.dynamodb.conditions import Key, Attr
 
 from pynamodb.models import Model
-from pynamodb.attributes import UnicodeAttribute
-from pynamodb.attributes import NumberAttribute
+from pynamodb.attributes import UnicodeAttribute, NumberAttribute, ListAttribute,UTCDateTimeAttribute
+from pynamodb.exceptions import DoesNotExist
+
 
 DYNAMO = boto3.client('dynamodb')
 DYNAMO_TABLE = "dailyflightdeals"
@@ -19,11 +21,23 @@ app.debug = True
 
 @app.route('/citydeals/{city}',cors=True)
 def get_deals(city):
+    try:
+        cached_flight = FlightCache.get(city)
+        tz_info = cached_flight.time.tzinfo
+        timedelta =  datetime.datetime.now(tz_info) - cached_flight.time
+        if timedelta.seconds / 3600 >= 3:
+            return {'deals': cached_flight.deals,'hrefs':cached_flight.hrefs}
+    except DoesNotExist:
+        print("cache does not exist yet")
+
     city = city.replace("%20", " ").title()
     x = TheFlightDeal(city)
     y = SecretFlying(city)
     e = EmailScraper(city, "", [x, y])
-    deals,hrefs = e.call_scrappers()
+    deals, hrefs = e.call_scrappers()
+
+    cache = FlightCache(city, time=datetime.datetime.utcnow(), deals=deals, hrefs=hrefs)
+    cache.save()
     return {'deals': deals,'hrefs':hrefs}
 
 
@@ -146,6 +160,17 @@ class User(Model):
     email = UnicodeAttribute(hash_key=True)
     city = UnicodeAttribute(range_key=True)
     time = NumberAttribute()
+
+class FlightCache(Model):
+    """
+    cached_flights
+    """
+    class Meta:
+        table_name = "cached_flights"
+    city = UnicodeAttribute(hash_key=True)
+    time = UTCDateTimeAttribute()
+    deals = ListAttribute()
+    hrefs = ListAttribute()
 
 
 
