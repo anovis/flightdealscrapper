@@ -5,7 +5,7 @@ from urllib.request import Request
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import smtplib
-
+secret = 'secret'
 
 class EmailScraper:
     def __init__(self, city, subscribers, scrappers):
@@ -20,7 +20,7 @@ class EmailScraper:
     def create_email_client(self):
         s = smtplib.SMTP(host="smtp.gmail.com", port = "587")
         s.starttls()
-        s.login('dailyflightdeals@gmail.com','testing123')
+        s.login('dailyflightdeals@gmail.com',secret)
         return s
 
     def create_message(self):
