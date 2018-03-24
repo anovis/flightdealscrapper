@@ -20,7 +20,7 @@ class EmailScraper:
     def create_email_client(self):
         s = smtplib.SMTP(host="smtp.gmail.com", port = "587")
         s.starttls()
-        s.login('dailyflightdeals@gmail.com','testing123')
+        s.login('dailyflightdeals@gmail.com','flightsecret10')
         return s
 
     def create_message(self):
