@@ -4,30 +4,33 @@ import re
 from urllib.request import urlopen
 from urllib.request import Request
 
-# from pynamodb.models import Model
-# from pynamodb.attributes import UnicodeAttribute, NumberAttribute, ListAttribute,UTCDateTimeAttribute
-# from pynamodb.exceptions import DoesNotExist
+from pynamodb.models import Model
+from pynamodb.attributes import UnicodeAttribute, NumberAttribute, ListAttribute,UTCDateTimeAttribute
+from pynamodb.exceptions import DoesNotExist
 
 city_caching = ["Washington", "New York", "San Francisco","Boston","Dallas","Atlanta" ]
 
 def my_handler(event, context):
     time = datetime.datetime.utcnow()
 
-    return time
+    html_list = get_html()
+    for city in city_caching:
+        deal_list = []
+        for html in html_list:
+            deal_list = deal_list + html.find_all(title=re.compile('.*' + city), text=True, class_=None)
+            deals = []
+            hrefs = []
+            for deal in deal_list:
+                deals.append(deal["title"])
+                hrefs.append(deal["href"])
 
-
-# class FlightCache(Model):
-#     """
-#     cached_flights
-#     """
-#     class Meta:
-#         table_name = "cached_flights"
-#     city = UnicodeAttribute(hash_key=True)
-#     time = UTCDateTimeAttribute()
-#     deals = ListAttribute()
-#     hrefs = ListAttribute()
-
-
+        try:
+            cached_flight = FlightCache.get(city)
+            cached_flight.update(actions=[FlightCache.time.set(time), FlightCache.deals.set(deals), FlightCache.hrefs.set(hrefs)])
+        except DoesNotExist:
+            cache = FlightCache(city, time=time, deals=deals, hrefs=hrefs)
+            cache.save()
+    return
 
 
 def get_html():
@@ -37,6 +40,13 @@ def get_html():
     res = urlopen(website)
     html = str(res.read(),res.headers.get_content_charset('utf8'))
     secretBS = BeautifulSoup(html,'html.parser')
+
+    #Secret Flying page 2
+    website = "http://www.secretflying.com/usa-deals/page/2/"
+    res = urlopen(website)
+    html = str(res.read(),res.headers.get_content_charset('utf8'))
+    secretBS2 = BeautifulSoup(html,'html.parser')
+
 
     #Flight Deal
 
@@ -51,14 +61,16 @@ def get_html():
     html = str(res.read(),res.headers.get_content_charset('utf8'))
     flightBS = BeautifulSoup(html,'html.parser')
 
-    return [secretBS, flightBS]
-
-    #deal_list = self.soup.find_all(title=re.compile('.*' + self.city), text=True, class_=None)
+    return [secretBS, secretBS2, flightBS]
 
 
-html_list = get_html()
-for city in city_caching:
-    deal_list = []
-    for html in html_list:
-        deal_list =deal_list + html.find_all(title=re.compile('.*' + city), text=True, class_=None)
-    print(deal_list)
+class FlightCache(Model):
+    """
+    cached_flights
+    """
+    class Meta:
+        table_name = "cached_flights"
+    city = UnicodeAttribute(hash_key=True)
+    time = UTCDateTimeAttribute()
+    deals = ListAttribute()
+    hrefs = ListAttribute()
