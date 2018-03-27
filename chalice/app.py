@@ -19,25 +19,31 @@ DYNAMO_TABLE = "dailyflightdeals"
 app = Chalice(app_name="dailyflightdeal")
 app.debug = True
 
+
 @app.route('/citydeals/{city}',cors=True)
 def get_deals(city):
+    city = city.replace("%20", " ").title()
     try:
         cached_flight = FlightCache.get(city)
+        isCache = True
         tz_info = cached_flight.time.tzinfo
-        timedelta =  datetime.datetime.now(tz_info) - cached_flight.time
-        if timedelta.seconds / 3600 >= 3:
+        timedelta = datetime.datetime.now(tz_info) - cached_flight.time
+        if timedelta.seconds / 3600 <= 3:
             return {'deals': cached_flight.deals,'hrefs':cached_flight.hrefs}
     except DoesNotExist:
+        isCache = False
         print("cache does not exist yet")
 
-    city = city.replace("%20", " ").title()
     x = TheFlightDeal(city)
     y = SecretFlying(city)
     e = EmailScraper(city, "", [x, y])
     deals, hrefs = e.call_scrappers()
 
-    cache = FlightCache(city, time=datetime.datetime.utcnow(), deals=deals, hrefs=hrefs)
-    cache.save()
+    if isCache:
+        cached_flight.update(actions=[FlightCache.time.set(datetime.datetime.utcnow()), FlightCache.deals.set(deals), FlightCache.hrefs.set(hrefs)])
+    else:
+        cache = FlightCache(city, time=datetime.datetime.utcnow(), deals=deals, hrefs=hrefs)
+        cache.save()
     return {'deals': deals,'hrefs':hrefs}
 
 
@@ -151,6 +157,7 @@ class TheFlightDeal(BaseScrapper):
             deal_href.append(deal["href"])
         return deal_name, deal_href
 
+
 class User(Model):
     """
     dailyflightdeals
@@ -160,6 +167,7 @@ class User(Model):
     email = UnicodeAttribute(hash_key=True)
     city = UnicodeAttribute(range_key=True)
     time = NumberAttribute()
+
 
 class FlightCache(Model):
     """
@@ -171,6 +179,5 @@ class FlightCache(Model):
     time = UTCDateTimeAttribute()
     deals = ListAttribute()
     hrefs = ListAttribute()
-
 
 
